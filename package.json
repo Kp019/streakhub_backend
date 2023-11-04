@@ -1,0 +1,19 @@
+{
+  "name": "streakhub_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "start dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kp019/streakhub_backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kp019/streakhub_backend/issues"
+  },
+  "homepage": "https://github.com/Kp019/streakhub_backend#readme"
+}
