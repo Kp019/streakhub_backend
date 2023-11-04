@@ -16,7 +16,7 @@ const cors = require("cors");
 //   methods: "GET,PUT,POST,DELETE",
 //   allowedHeaders: "Content-Type,Authorization",
 // };
-// app.use(cors(corsOptions));
+app.use(cors());
 
 const bcrypt = require("bcrypt");
 const saltRounds = process.env.SALT_ROUNDS;
