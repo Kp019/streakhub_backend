@@ -1,6 +1,26 @@
 const express = require("express");
 const { createClient } = require("@supabase/supabase-js");
 const app = express();
+app.use(express.json());
+const cors = require("cors");
+
+// const allowedOrigins = ["http://example.com", "http://localhost:3000"];
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (allowedOrigins.includes(origin) || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: "GET,PUT,POST,DELETE",
+//   allowedHeaders: "Content-Type,Authorization",
+// };
+// app.use(cors(corsOptions));
+
+const bcrypt = require("bcrypt");
+const saltRounds = process.env.SALT_ROUNDS;
+
 require("dotenv").config();
 
 const supabaseurl = process.env.PUBLIC_SUPABASE_URL;
@@ -14,6 +34,7 @@ function addDays(date, days) {
   date.setDate(date.getDate() + days);
   return date;
 }
+
 function secondsToHms(d) {
   d = Number(d);
   var h = Math.floor(d / 3600);
@@ -119,9 +140,29 @@ app.get("/markthetodo/:id", async (req, res) => {
 //   const {} = req.body;
 // });
 
-// app.post("/register", (req, res) => {
-//   const { name, username, password } = req.body;
-// });
+app.post("/register", async (req, res) => {
+  console.log(req);
+  const { name, username, password } = req.body;
+  const { data, error } = await supabase
+    .from("main")
+    .select("*")
+    .eq("username", username);
+  if (data.length > 0) {
+    res.json({ message: "username already exists" });
+  } else {
+    bcrypt.hash(password, saltRounds, async function (err, hash) {
+      const { data, error } = await supabase
+        .from("main")
+        .insert([{ name: name, username: username, password: hash }])
+        .select();
+      const { data: main, error: erroa } = await supabase
+        .from("main")
+        .select("*")
+        .eq("username", username);
+      res.json(data);
+    });
+  }
+});
 
 app.get("/connect/:id", async (req, res) => {
   let id = req.params;
@@ -153,13 +194,16 @@ app.get("/connect/:id", async (req, res) => {
   let durationstring = secondsToHms(duration);
   console.log(durationstring);
   let hrs = durationstring.split(" ")[0];
+
   const hrstoreach = main[0].wakatime_goal;
-  if (Number(hrs) > hrstoreach) {
-    console.log("goal acheived hours more than goal");
-    const { data, error } = await supabase
-      .from("main")
-      .update({ wakatime_goal_achieved: 1 })
-      .eq("uid", id);
+  if (durationstring.includes("hour")) {
+    if (Number(hrs) > hrstoreach) {
+      console.log("goal acheived hours more than goal");
+      const { data, error } = await supabase
+        .from("main")
+        .update({ wakatime_goal_achieved: 1 })
+        .eq("uid", id);
+    }
   } else {
     const { data, error } = await supabase
       .from("main")
@@ -180,7 +224,10 @@ app.get("/connect/:id", async (req, res) => {
         console.log("streak updated");
       });
   });
-
-  res.json(wakatime);
+  const { data: theres, error: todoerror } = await supabase
+    .from("main")
+    .select("*")
+    .eq("uid", id);
+  res.json(theres);
 });
 app.listen(4000);
