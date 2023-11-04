@@ -196,13 +196,39 @@ app.get("/connect/:id", async (req, res) => {
   let hrs = durationstring.split(" ")[0];
 
   const hrstoreach = main[0].wakatime_goal;
-  if (durationstring.includes("hour")) {
-    if (Number(hrs) > hrstoreach) {
+  let wakatime_lmi = new Date(main[0].wakatime_lm);
+  wakatime_lmi.setHours(0, 0, 0, 0);
+
+  let wakacurrdateswork = new Date();
+  wakacurrdateswork = addDays(wakacurrdateswork, -2);
+  wakacurrdateswork.setHours(0, 0, 0, 0);
+  let newakka = new Date();
+
+  if (wakacurrdateswork >= wakatime_lmi) {
+    console.log("goal acheived-oombi");
+    const { data, error } = await supabase
+      .from("main")
+      .update({
+        wakatime_lm: newakka,
+        wakatime_streak: 0,
+        wakatime_goal_achieved: 0,
+      })
+      .eq("uid", id);
+
+    wakatime_lmi = wakacurrdateswork;
+  } else if (durationstring.includes("hour")) {
+    if (Number(hrs) > hrstoreach && !Boolean(main[0].wakatime_goal_achieved)) {
       console.log("goal acheived hours more than goal");
       const { data, error } = await supabase
         .from("main")
-        .update({ wakatime_goal_achieved: 1 })
+        .update({
+          wakatime_goal_achieved: 1,
+          wakatime_streak: main[0].wakatime_streak + 1,
+          wakatime_lm: newakka,
+        })
         .eq("uid", id);
+    } else if (Boolean(main[0].wakatime_goal_achieved)) {
+      console.log("hey");
     }
   } else {
     const { data, error } = await supabase
