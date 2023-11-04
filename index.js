@@ -66,6 +66,17 @@ async function countContributionStreak(username) {
   }
 }
 
+app.get("/fetchtodo/:id", async (req, res) => {
+  let id = req.params;
+  id = Number(id.id);
+  let { data: main, error } = await supabase
+    .from("todo")
+    .select("*")
+    .eq("uid", id);
+  console.log(main);
+  res.json(main);
+});
+
 app.get("/connect/:id", async (req, res) => {
   let id = req.params;
   id = Number(id.id);
