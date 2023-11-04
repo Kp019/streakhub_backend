@@ -77,6 +77,20 @@ app.get("/fetchtodo/:id", async (req, res) => {
   res.json(main);
 });
 
+app.get("/maketodo/:id/:maker/:streak", async (req, res) => {
+  let maker = req.params.maker;
+  let streak = Number(req.params.streak);
+  let uid = Number(req.params.id);
+  let date = new Date();
+  date = addDays(date, -1);
+  date = date.toISOString();
+  const { data, error } = await supabase
+    .from("todo")
+    .insert([{ uid: uid, name: maker, streak: streak, modified: date }])
+    .select();
+  res.json("hey");
+});
+
 app.get("/connect/:id", async (req, res) => {
   let id = req.params;
   id = Number(id.id);
