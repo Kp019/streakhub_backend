@@ -131,13 +131,19 @@ app.get("/connect/:id", async (req, res) => {
     .select("*")
     .eq("uid", id);
 
-  const wakaclient = new WakaTimeClient(process.env.WAKATIME_TOKEN);
+  const wakaclient = new WakaTimeClient(main[0].wakatime_api);
   // const stats = await wakaclient.getMyStats({ range: RANGE.LAST_7_DAYS });
 
   // let wakatime = stats.data;
+  let currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
+
+  currentDate = `${year}-${month}-${day}`;
   let wakatime = await wakaclient.getDurations({
-    userId: "joel_j_george",
-    date: "2023-11-04",
+    userId: main[0].wakatime_username,
+    date: currentDate,
   });
   wakatime = wakatime.data;
   let duration = 0;
@@ -157,7 +163,7 @@ app.get("/connect/:id", async (req, res) => {
   } else {
     const { data, error } = await supabase
       .from("main")
-      .update({ wakatime_goal_achieved: false })
+      .update({ wakatime_goal_achieved: 0 })
       .eq("uid", id);
   }
 
