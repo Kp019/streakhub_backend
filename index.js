@@ -164,6 +164,22 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/addcontent", async (req, res) => {
+  const { id, githubusername, wakatime_api, wakatimeUsername, wakatimeGoal } =
+    req.body;
+  let { data, error } = await supabase
+    .from("main")
+    .update({
+      github_username: githubusername,
+      wakatime_api: wakatime_api,
+      wakatime_username: wakatimeUsername,
+      wakatime_goal: wakatimeGoal,
+    })
+    .eq("uid", id);
+
+  res.json(data);
+});
+
 app.get("/connect/:id", async (req, res) => {
   let id = req.params;
   id = Number(id.id);
