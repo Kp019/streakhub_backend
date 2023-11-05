@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "startdev": "nodemon index.js",
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Kp019/streakhub_backend#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
+    "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
